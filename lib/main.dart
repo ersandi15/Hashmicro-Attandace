@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, primarySwatch: Colors.blue),
       // Langsung arahkan ke DashboardView
-      initialRoute: AppRoutes.dashboard,
+      initialRoute: AppRoutes.login,
       getPages: AppPages.getPages(),
     );
   }

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hashmicro_test/config/app_routes.dart';
 import 'package:hashmicro_test/features/attendance/views/components/menu_card_components.dart';
+import 'package:hashmicro_test/features/dashboard/controllers/dashboard_controller.dart';
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
 
   @override
@@ -27,12 +28,14 @@ class DashboardView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Selamat Datang
-            const Text(
-              "Halo, Ersandi!",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            Obx(
+              () => Text(
+                "Halo, ${controller.name.value}!",
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
             ),
             const Text(
@@ -42,38 +45,41 @@ class DashboardView extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Grid Menu
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-              children: [
-                MenuCardComponents(
-                  title: "Master Lokasi",
-                  icon: Icons.map_outlined,
-                  color: Colors.blue,
-                  onTap: () => Get.toNamed(AppRoutes.masterLocation), //
-                ),
-                MenuCardComponents(
-                  title: "Absensi GPS",
-                  icon: Icons.location_on_rounded,
-                  color: Colors.green,
-                  onTap: () => Get.toNamed(AppRoutes.attendance), //
-                ),
-                MenuCardComponents(
-                  title: "Riwayat",
-                  icon: Icons.history,
-                  color: Colors.orange,
-                  onTap: () => Get.toNamed(AppRoutes.history),
-                ),
-                MenuCardComponents(
-                  title: "Profil",
-                  icon: Icons.person_outline,
-                  color: Colors.purple,
-                  onTap: () {},
-                ),
-              ],
+            Obx(
+              () => GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+                children: [
+                  if (controller.isAdmin.value)
+                    MenuCardComponents(
+                      title: "Master Lokasi",
+                      icon: Icons.map_outlined,
+                      color: Colors.blue,
+                      onTap: () => Get.toNamed(AppRoutes.masterLocation), //
+                    ),
+                  MenuCardComponents(
+                    title: "Absensi GPS",
+                    icon: Icons.location_on_rounded,
+                    color: Colors.green,
+                    onTap: () => Get.toNamed(AppRoutes.attendance), //
+                  ),
+                  MenuCardComponents(
+                    title: "Riwayat",
+                    icon: Icons.history,
+                    color: Colors.orange,
+                    onTap: () => Get.toNamed(AppRoutes.history),
+                  ),
+                  MenuCardComponents(
+                    title: "Profil",
+                    icon: Icons.person_outline,
+                    color: Colors.purple,
+                    onTap: () => Get.toNamed(AppRoutes.profile),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

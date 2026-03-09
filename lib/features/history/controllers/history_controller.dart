@@ -18,11 +18,27 @@ class HistoryController extends GetxController {
       isLoading.value = true;
       final db = await _dbHelper.database;
 
-      // Mengambil data dari terbaru ke terlama
-      final List<Map<String, dynamic>> maps = await db.query(
-        'attendance_history',
-        orderBy: 'id DESC',
-      );
+      // Ambil session user saat ini
+      final session = await _dbHelper.getUserSession();
+      final isAdmin =
+          session != null ? (session['isAdmin'] as bool? ?? false) : false;
+      final userName =
+          session != null ? (session['name'] as String? ?? 'User') : 'User';
+
+      List<Map<String, dynamic>> maps;
+
+      if (isAdmin) {
+        // Jika Admin: Ambil semua riwayat absensi
+        maps = await db.query('attendance_history', orderBy: 'id DESC');
+      } else {
+        // Jika User biasa: Ambil riwayat absensi diri sendiri saja
+        maps = await db.query(
+          'attendance_history',
+          where: 'user_name = ?',
+          whereArgs: [userName],
+          orderBy: 'id DESC',
+        );
+      }
 
       historyList.value = List.generate(maps.length, (i) {
         return AttendanceModel(
@@ -35,6 +51,7 @@ class HistoryController extends GetxController {
           address: maps[i]['address'],
           status: maps[i]['status'],
           distance: MapsHelper.parseDouble(maps[i]['distance']),
+          userName: maps[i]['user_name'] ?? 'User',
         );
       });
     } catch (e) {

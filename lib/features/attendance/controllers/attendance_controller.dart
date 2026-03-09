@@ -6,6 +6,7 @@ import 'package:hashmicro_test/features/location_master/models/location_models.d
 import 'package:hashmicro_test/features/attendance/models/attendance_models.dart';
 import 'package:hashmicro_test/services/location_service.dart';
 import 'package:hashmicro_test/utils/location_helpers.dart';
+import 'package:hashmicro_test/database/db_helpers.dart';
 import 'package:hashmicro_test/utils/ui_helpers.dart';
 
 class AttendanceController extends GetxController {
@@ -73,6 +74,11 @@ class AttendanceController extends GetxController {
       final formattedDate = DateFormat('yyyy-MM-dd').format(now);
       final formattedTime = DateFormat('HH:mm:ss').format(now);
 
+      // Ambil nama user dari session
+      final session = await DBHelper().getUserSession();
+      final userName =
+          session != null ? (session['name'] as String? ?? 'User') : 'User';
+
       final attendanceRecord = AttendanceModel(
         date: formattedDate,
         time: formattedTime,
@@ -82,6 +88,7 @@ class AttendanceController extends GetxController {
         address: userAddress,
         status: status,
         distance: distance,
+        userName: userName,
       );
 
       await _repo.saveAttendance(attendanceRecord);

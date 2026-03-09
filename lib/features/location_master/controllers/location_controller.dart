@@ -34,6 +34,9 @@ class LocationController extends GetxController {
       mapController?.animateCamera(
         CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
       );
+
+      // Ambil nama alamat dan masukkan ke UI
+      await getAddressFromCoords(position.latitude, position.longitude);
     } catch (e) {
       UIHelper.showErrorDialog(title: "Error", message: e.toString());
     } finally {
@@ -62,6 +65,10 @@ class LocationController extends GetxController {
       UIHelper.showSuccessDialog(
         title: "Sukses",
         message: "Master data lokasi berhasil disimpan!",
+        onConfirm: () {
+          // Tutup dialog dan halaman presensi (Get back 2 kali), kembali ke Dashboard.
+          Get.close(2);
+        },
       );
 
       // Reset form setelah simpan

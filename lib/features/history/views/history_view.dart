@@ -53,12 +53,25 @@ class HistoryView extends GetView<HistoryController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "${data.date} | ${data.time}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${data.date} | ${data.time}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Text(
+                              data.userName,
+                              style: const TextStyle(
+                                color: Colors.blueAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
