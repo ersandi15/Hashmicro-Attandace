@@ -21,6 +21,13 @@ class LocationController extends GetxController {
   // Di dalam LocationController
   GoogleMapController? mapController;
 
+  @override
+  void onInit() {
+    super.onInit();
+    // Langsung minta permission dan titik lokasi saat halaman dibuka
+    pinCurrentLocation();
+  }
+
   Future<void> pinCurrentLocation() async {
     try {
       isLoading.value = true;
