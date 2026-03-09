@@ -8,10 +8,10 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadUserRole();
+    loadUserRole();
   }
 
-  Future<void> _loadUserRole() async {
+  Future<void> loadUserRole() async {
     final session = await DBHelper().getUserSession();
     if (session != null) {
       isAdmin.value = session['isAdmin'] as bool? ?? false;
