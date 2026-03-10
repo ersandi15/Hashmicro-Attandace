@@ -8,6 +8,8 @@ import 'package:hashmicro_test/services/location_service.dart';
 import 'package:hashmicro_test/utils/location_helpers.dart';
 import 'package:hashmicro_test/database/db_helpers.dart';
 import 'package:hashmicro_test/utils/ui_helpers.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class AttendanceController extends GetxController {
   final AttendanceRepository _repo = AttendanceRepository();
@@ -38,6 +40,7 @@ class AttendanceController extends GetxController {
 
     try {
       isLoading.value = true;
+
       // 1. Ambil posisi user sekarang
       final userPos = await _locationService.getCurrentLocation();
 
@@ -69,8 +72,17 @@ class AttendanceController extends GetxController {
       bool isSuccess = LocationHelper.isWithinRadius(distance);
       String status = isSuccess ? "Success" : "Rejected";
 
+      // --- BAGIAN YANG DITAMBAHKAN (TIMEZONE LOGIC) ---
+      // Ambil ID Timezone dari perangkat (Contoh: "Asia/Jakarta")
+      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      final String currentTimeZone = timezoneInfo.identifier;
+      final location = tz.getLocation(currentTimeZone);
+
+      // Gunakan TZDateTime agar waktu terkunci pada zona yang benar
+      final now = tz.TZDateTime.now(location);
+      // ------------------------------------------------
+
       // 4. Record ke SQLite
-      final now = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd').format(now);
       final formattedTime = DateFormat('HH:mm:ss').format(now);
 
@@ -79,6 +91,7 @@ class AttendanceController extends GetxController {
       final userName =
           session != null ? (session['name'] as String? ?? 'User') : 'User';
 
+      // Pastikan model kamu sudah menerima parameter 'timezone'
       final attendanceRecord = AttendanceModel(
         date: formattedDate,
         time: formattedTime,
@@ -89,27 +102,27 @@ class AttendanceController extends GetxController {
         status: status,
         distance: distance,
         userName: userName,
+        timezone: currentTimeZone, // <-- Simpan zona waktu ke SQLite
       );
 
       await _repo.saveAttendance(attendanceRecord);
 
+      // 5. Tampilkan Dialog
       if (isSuccess) {
-        // Panggil Helper Sukses
         UIHelper.showSuccessDialog(
           title: "Absensi Berhasil",
           message:
-              "Anda berada di radius aman (${distance.toStringAsFixed(1)}m). Data telah dicatat.",
+              "Anda berada di radius aman (${distance.toStringAsFixed(1)}m).\nZona Waktu: $currentTimeZone\nData telah dicatat.",
           onConfirm: () {
             // Tutup dialog dan halaman presensi (Get back 2 kali), kembali ke Dashboard.
             Get.close(2);
           },
         );
       } else {
-        // Panggil Helper Error
         UIHelper.showErrorDialog(
           title: "Absensi Ditolak",
           message:
-              "Jarak Anda saat ini ${distance.toStringAsFixed(1)}m. Maksimal radius adalah 50 meter.",
+              "Jarak Anda saat ini ${distance.toStringAsFixed(1)}m. Maksimal radius adalah 50 meter.\nData penolakan tetap dicatat untuk audit.",
         );
       }
     } catch (e) {

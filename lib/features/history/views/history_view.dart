@@ -57,7 +57,7 @@ class HistoryView extends GetView<HistoryController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${data.date} | ${data.time}",
+                              "${data.date} | ${data.time} ${data.timezone ?? ''}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,

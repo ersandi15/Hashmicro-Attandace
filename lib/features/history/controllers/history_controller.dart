@@ -52,6 +52,7 @@ class HistoryController extends GetxController {
           status: maps[i]['status'],
           distance: MapsHelper.parseDouble(maps[i]['distance']),
           userName: maps[i]['user_name'] ?? 'User',
+          timezone: maps[i]['timezone'],
         );
       });
     } catch (e) {

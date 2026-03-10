@@ -19,7 +19,7 @@ class DBHelper {
     String path = join(await getDatabasesPath(), 'attendance_system.db');
     return await openDatabase(
       path,
-      version: 4,
+      version: 6,
       onCreate: (db, version) async {
         // Tabel Master Data Lokasi
         await db.execute('''
@@ -45,7 +45,8 @@ class DBHelper {
             address TEXT,
             status TEXT,
             distance REAL,
-            user_name TEXT
+            user_name TEXT,
+            timezone TEXT
           )
         ''');
 
@@ -94,6 +95,15 @@ class DBHelper {
           try {
             await db.execute(
               'ALTER TABLE attendance_history ADD COLUMN user_name TEXT',
+            );
+          } catch (e) {
+            // Abaikan jika sudah ada
+          }
+        }
+        if (oldVersion < 6) {
+          try {
+            await db.execute(
+              'ALTER TABLE attendance_history ADD COLUMN timezone TEXT',
             );
           } catch (e) {
             // Abaikan jika sudah ada

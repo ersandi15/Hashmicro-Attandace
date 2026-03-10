@@ -9,6 +9,7 @@ class AttendanceModel {
   final String status; // "Success" atau "Rejected"
   final double distance;
   final String userName;
+  final String? timezone;
 
   AttendanceModel({
     this.id,
@@ -21,6 +22,7 @@ class AttendanceModel {
     required this.status,
     required this.distance,
     required this.userName,
+    this.timezone,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +36,7 @@ class AttendanceModel {
       'status': status,
       'distance': distance,
       'user_name': userName,
+      'timezone': timezone,
     };
   }
 }
